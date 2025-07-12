@@ -1,0 +1,43 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Set execute permissions for husky pre-commit
+        run: chmod +x .husky/pre-commit
+
+      - name: Check styleguide
+        run: pnpm format:check
+
+      - name: Knip it in the bud!
+        run: pnpm knip
+
+      - name: Knip it again
+        run: pnpm knip:production
+
+      - name: Compile for errors
+        run: .husky/pre-commit

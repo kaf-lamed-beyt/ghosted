@@ -13,7 +13,7 @@ export default function Home() {
         </Text>
       </Stack>
       <Center gap=".4em">
-        <Link download href="/auth/signup">
+        <Link download href="/auth/login">
           <Button
             background="var(--heavy-grey)"
             color="#fff"
