@@ -1,0 +1,8 @@
+#!/bin/sh
+# .husky/pre-commit
+
+if [ -n "$CI" ]; then
+  pnpm format && pnpm typecheck
+else
+  echo "Skipping pre-commit checks in local environment."
+fi

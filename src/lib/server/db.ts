@@ -1,4 +1,4 @@
-import postgres from "postgres";
+import postgres from 'postgres';
 
 const { PGHOST, PGPORT, PGDATABASE, PGUSERNAME, PGPASSWORD, PGSSLMODE } =
   process.env;
@@ -6,14 +6,14 @@ const { PGHOST, PGPORT, PGDATABASE, PGUSERNAME, PGPASSWORD, PGSSLMODE } =
 const isValidSSLValue = (
   sslstring: string
 ): sslstring is 'require' | 'allow' | 'prefer' | 'verify-full' =>
-  ['require', 'allow', 'prefer', 'verify-full'].includes(sslstring)
+  ['require', 'allow', 'prefer', 'verify-full'].includes(sslstring);
 const validSSLValue = (sslstring: string | undefined) => {
   return sslstring
     ? isValidSSLValue(sslstring)
       ? sslstring
       : undefined
-    : undefined
-}
+    : undefined;
+};
 
 export const sql = postgres({
   host: PGHOST,
@@ -25,19 +25,19 @@ export const sql = postgres({
   transform: {
     ...postgres.camel,
     undefined: null,
-  }
-})
+  },
+});
 
 export interface Follower {
   username: string;
-  avatar_url?: string;
-  fetched_at: Date;
+  avatarUrl?: string;
+  fetchedAt: Date;
 }
 
-export interface User extends Pick<Follower, "avatar_url" | "username"> {
-  github_id: number;
+export interface User extends Pick<Follower, 'avatarUrl' | 'username'> {
+  githubId: number;
   email?: string;
-  created_at: string;
+  createdAt: Date;
 }
 
 export interface GHFollowersDatabase {
@@ -57,13 +57,13 @@ export function db(): GHFollowersDatabase {
         followers.map(
           (f) => sql<Follower[]>`
           insert into followers (username, avatar_url, fetched_at)
-          values (${f.username}, ${f.avatar_url || ""}, ${now})
-        `,
-        ),
+          values (${f.username}, ${f.avatarUrl || ''}, ${now})
+        `
+        )
       );
     },
     async getFollowersByDate(date) {
-      const dateStr = date.toISOString().split("T")[0];
+      const dateStr = date.toISOString().split('T')[0];
       const result = await sql<Follower[]>`
         select username, avatar_url, fetched_at
         from followers
@@ -79,12 +79,13 @@ export function db(): GHFollowersDatabase {
     },
     async createUser(user) {
       await sql`
-        insert into users (email, github_id, username, avatar_url)
+        insert into users (email, github_id, username, avatar_url, created_at)
         values (
           ${user.email ?? null},
-          ${user.github_id},
+          ${user.githubId},
           ${user.username},
-          ${user.avatar_url ?? null}
+          ${user.avatarUrl ?? null},
+          ${user.createdAt}
         )
         on conflict (github_id) do nothing
       `;
@@ -92,8 +93,8 @@ export function db(): GHFollowersDatabase {
     async getUserByGitHubId(id) {
       const [user] = await sql<User[]>`
         select * from users where github_id = ${id}
-      `
-      return user
+      `;
+      return user;
     },
     async getMostRecentSnapshot() {
       const result = await sql<Follower[]>`
@@ -102,8 +103,8 @@ export function db(): GHFollowersDatabase {
         where fetched_at = (
           select max(fetched_at) from followers
         )
-      `
-      return result
-    }
+      `;
+      return result;
+    },
   };
 }
