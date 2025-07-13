@@ -8,11 +8,17 @@ export async function getCurrentUser(): Promise<User | null> {
 
   if (!value) return null;
 
-  const id = antagonist(value);
-  const userId = Number(id);
+  const data = antagonist(value);
+  let session: { id: number; token: string };
+  try {
+    session = JSON.parse(String(data));
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 
-  if (!userId || isNaN(userId)) return null;
+  if (!session?.id || isNaN(session.id)) return null;
 
-  const user = await db().getUserByGitHubId(userId);
-  return user ?? null;
+  const user = await db().getUserByGitHubId(session.id);
+  return user ? { ...user, token: session.token } : null;
 }

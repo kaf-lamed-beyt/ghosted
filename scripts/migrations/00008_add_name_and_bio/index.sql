@@ -1,0 +1,4 @@
+ALTER TABLE users
+ADD COLUMN name TEXT,
+ADD COLUMN bio TEXT,
+ADD COLUMN location TEXT;
