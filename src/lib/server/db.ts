@@ -54,6 +54,7 @@ export interface User extends Omit<Follower, 'fetchedAt' | 'isFollowing'> {
 }
 
 interface GHFollowersDatabase {
+  humans: () => Promise<User[]>;
   addFollowers: (followers: Follower[], githubId: number) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
   getMostRecentSnapshot: () => Promise<Follower[]>;
@@ -66,6 +67,12 @@ interface GHFollowersDatabase {
 
 export function db(): GHFollowersDatabase {
   return {
+    async humans() {
+      const result = await sql<User[]>`
+        select * from users
+      `;
+      return result;
+    },
     async addFollowers(followers, githubId) {
       const now = new Date();
       await Promise.all(

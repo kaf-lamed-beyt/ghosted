@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from '@/lib/server/session';
+import { getSession } from '@/lib/server/session';
 import Dashboard from '@/containers/dashboard';
 
 export default async function Page() {
-  const user = await getCurrentUser();
+  const user = await getSession();
 
   if (!user) {
     redirect('/');
