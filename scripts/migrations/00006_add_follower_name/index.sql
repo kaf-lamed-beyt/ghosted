@@ -1,0 +1,2 @@
+ALTER TABLE followers
+ADD COLUMN name TEXT;

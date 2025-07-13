@@ -9,5 +9,5 @@ export const {
   PGPASSWORD,
   PGSSLMODE,
   CRY_KEY,
-  NODE_ENV
+  NODE_ENV,
 } = process.env;

@@ -26,11 +26,7 @@ export const antagonist = (protectedValue: string) => {
 
   try {
     const secret_msg = Buffer.from(protectedValue!, 'base64');
-    const decipher = crypto.createDecipheriv(
-      algorithm,
-      passPhrase,
-      null
-    );
+    const decipher = crypto.createDecipheriv(algorithm, passPhrase, null);
     if (secret_msg) {
       const decrypted = Buffer.concat([
         decipher.update(secret_msg),

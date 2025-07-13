@@ -1,0 +1,10 @@
+{
+  "ignoreDependencies": [
+    "eslint",
+    "eslint-config-next",
+    "@dotenvx/dotenvx",
+    "standard-version",
+    "postgres-shift"
+  ],
+  "ignore": ["scripts/migrate.mjs"]
+}

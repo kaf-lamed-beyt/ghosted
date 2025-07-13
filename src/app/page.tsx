@@ -1,5 +1,5 @@
-import { Button, Center, Stack, Text } from "@chakra-ui/react";
-import Link from "next/link";
+import { Button, Center, Stack, Text } from '@chakra-ui/react';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -15,17 +15,16 @@ export default function Home() {
       <Center gap=".4em">
         <Link download href="/auth/login">
           <Button
-            background="var(--heavy-grey)"
+            background="var(--color-heavy-grey)"
             color="#fff"
             width="fit-content"
             px="2em"
             fontWeight="400"
             _hover={{
-              background: "var(--heavy-grey)",
+              background: 'var(--color-heavy-grey)',
             }}
             borderRadius="18px"
-            border="1px solid var(--alt-white)"
-          >
+            border="1px solid var(--color-alt-white)">
             Get Started
           </Button>
         </Link>

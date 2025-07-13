@@ -1,20 +1,13 @@
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/server/session';
+import Dashboard from '@/containers/dashboard';
 
-export default async function Dashboard() {
+export default async function Page() {
   const user = await getCurrentUser();
-
-  console.log('user', user)
 
   if (!user) {
     redirect('/');
   }
 
-  return (
-    <div>
-      <h1>Welcome @{user.username} 👋</h1>
-      <img src={user.avatarUrl} alt="avatar" width={60} height={100} />
-    </div>
-  );
+  return <Dashboard user={user} />;
 }

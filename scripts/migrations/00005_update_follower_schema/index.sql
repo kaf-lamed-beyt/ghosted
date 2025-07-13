@@ -1,0 +1,3 @@
+ALTER TABLE followers
+ADD COLUMN bio TEXT,
+ADD COLUMN location TEXT;
