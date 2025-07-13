@@ -12,5 +12,5 @@ export const {
   NODE_ENV,
   RESEND_KEY,
   GITHUB_PAT,
-  EMAIL_DOMAIN
+  EMAIL_DOMAIN,
 } = process.env;

@@ -1,4 +1,4 @@
-import { takeSnapshot } from "@/lib/cron/snapshot";
+import { takeSnapshot } from '@/lib/cron/snapshot';
 
 export async function GET() {
   try {

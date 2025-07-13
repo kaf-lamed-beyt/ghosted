@@ -23,7 +23,7 @@ import { GitHubUser } from '@/components/github-user';
 export default function Dashboard({ user }: { user: User }) {
   const { data, isLoading, error } = useSWR('/api/followers');
   const ghostsCount = data?.ghosts.length || 0;
-  const followersCount = data?.followers?.length || 0
+  const followersCount = data?.followers?.length || 0;
 
   return (
     <Stack
