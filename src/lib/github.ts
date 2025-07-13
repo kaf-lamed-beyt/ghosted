@@ -21,6 +21,8 @@ export async function fetchGitHubFollowersForUser(
   return (
     await Promise.all(
       githubFollowers.map((f) =>
+        // github includes rate-limiting to this endpoint
+        // need to be wary of that, lol.
         limit(async () => {
           const detail = await octokit.rest.users.getByUsername({
             username: f.login,
