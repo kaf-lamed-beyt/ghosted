@@ -23,6 +23,7 @@ import { GitHubUser } from '@/components/github-user';
 export default function Dashboard({ user }: { user: User }) {
   const { data, isLoading, error } = useSWR('/api/followers');
   const ghostsCount = data?.ghosts.length || 0;
+  const followersCount = data?.followers?.length || 0;
 
   return (
     <Stack
@@ -75,7 +76,7 @@ export default function Dashboard({ user }: { user: User }) {
                 <UsersIcon size={16} color="var(--color-text-disabled)" />
                 <Text fontSize="sm" color="var(--color-text-disabled)">
                   <Text as="span" fontWeight="bold" color="white">
-                    {user.followers}
+                    {followersCount}
                   </Text>{' '}
                   followers
                 </Text>

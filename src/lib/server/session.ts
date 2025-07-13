@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { db, User } from './db';
 import { antagonist } from '../crypto';
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getSession(): Promise<User | null> {
   const cookieStore = await cookies();
   const value = cookieStore.get('ghosted_sesh')?.value;
 

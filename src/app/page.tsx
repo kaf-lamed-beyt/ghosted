@@ -1,7 +1,9 @@
+import { getSession } from '@/lib/server/session';
 import { Button, Center, Stack, Text } from '@chakra-ui/react';
 import Link from 'next/link';
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
   return (
     <Center flexFlow="column" height="100vh" gap="2em">
       <Stack direction="column">
@@ -13,7 +15,7 @@ export default function Home() {
         </Text>
       </Stack>
       <Center gap=".4em">
-        <Link download href="/auth/login">
+        <Link href={session?.token ? '/dashboard' : '/auth/login'}>
           <Button
             background="var(--color-heavy-grey)"
             color="#fff"
