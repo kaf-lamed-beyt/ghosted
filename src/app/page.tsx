@@ -1,11 +1,18 @@
 import { getSession } from '@/lib/server/session';
-import { Button, Center, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Stack,
+  Text,
+  Link as ChakraLink,
+} from '@chakra-ui/react';
 import Link from 'next/link';
 
 export default async function Home() {
   const session = await getSession();
   return (
-    <Center flexFlow="column" height="100vh" gap="2em">
+    <Center flexFlow="column" height="100vh" gap="2em" position="relative">
       <Stack direction="column">
         <Text fontSize="80px" fontWeight="800" textAlign="center">
           Ghosted.
@@ -43,6 +50,19 @@ export default async function Home() {
           </Button>
         </Link>
       </Center>
+
+      <Box position="absolute" bottom="2">
+        <Text color="var(--color-text-disabled)">
+          Found a bug? File an{' '}
+          <ChakraLink
+            href="https://github.com/kaf-lamed-beyt/ghosted/issues"
+            isExternal
+            textDecoration="underline"
+            color="var(--color-white)">
+            issue
+          </ChakraLink>
+        </Text>
+      </Box>
     </Center>
   );
 }
