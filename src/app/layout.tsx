@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '👻 Ghosted',
+  title: 'Ghosted',
   icons: '/ghosted.png',
   twitter: {
     card: 'summary_large_image',
