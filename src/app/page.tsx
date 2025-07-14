@@ -46,7 +46,7 @@ export default async function Home() {
             }}
             borderRadius="18px"
             border="1px solid var(--color-alt-white)">
-            Get Started
+            {session?.token ? 'Dashboard' : 'Get Started'}
           </Button>
         </Link>
       </Center>

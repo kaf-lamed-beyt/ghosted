@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Toaster } from 'sonner';
+import { NEXT_PUBLIC_APP_URL } from '@/lib/constants';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,11 +17,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Ghosted',
-  icons: '/ghosted.png',
+  icons: `${NEXT_PUBLIC_APP_URL}/ghosted.png`,
   twitter: {
     card: 'summary_large_image',
     images: '/ghosted.png',
     title: 'Ghosted',
+    siteId: 'ghostd.dev',
     site: 'ghostd.dev',
     description: 'Find out when someone follows or unfollows you on GitHub',
   },
