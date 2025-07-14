@@ -17,10 +17,9 @@ export default async function Home() {
           color="var(--color-text-disabled)"
           fontSize="sm"
           textAlign="center"
-          mt="0.5em"
-        >
-          We take bi-hourly snapshots to spot changes fast &mdash; and send you a
-          weekly summary so you don’t miss a thing.
+          mt="0.5em">
+          We take bi-hourly snapshots to spot changes fast &mdash; and send you
+          a weekly summary so you don’t miss a thing.
         </Text>
       </Stack>
       <Center gap=".4em">

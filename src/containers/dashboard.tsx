@@ -4,7 +4,6 @@ import {
   Box,
   Text,
   VStack,
-  Spinner,
   Avatar,
   HStack,
   Tabs,
