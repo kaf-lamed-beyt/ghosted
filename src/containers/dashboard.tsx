@@ -132,7 +132,7 @@ export default function Dashboard({ user }: { user: User }) {
                   borderRadius="8px"
                   border="1px solid var(--color-alt-white)"
                   fontWeight="300">
-                  {user.followers}
+                  {followersCount}
                 </Badge>
               </HStack>
             </Tab>
