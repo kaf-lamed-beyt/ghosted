@@ -14,3 +14,8 @@ export const {
   GITHUB_PAT,
   EMAIL_DOMAIN,
 } = process.env;
+
+export const skeleton = {
+  startColor: 'var(--color-dark-charcoal)',
+  endColor: 'var(--color-alt-white)',
+};
