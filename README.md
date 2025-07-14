@@ -78,4 +78,10 @@ I use Resend to manage emails for the snapshot job. If you need to work on any b
 
 When you're done with the steps outlined, you can install the dependencies with `pnpm i` and start the dev server.
 
+## Jobs
+
+Upstash provides the jobs instantiation &mdash; bi-hourly and weekly. So you don't run into issues, I doubt you would though, so long as you don't `curl` the routes explicitly locally.
+
+But, say, you get the urge to do so, please get the necessary API keys on [Upstash](https://upstash.com). You'd need to switch to the **QStash** tab, and create the respective jobs under **"Schedlues"**.
+
 _[Sidenote]_: make sure to always do `pnpm format` before you push so the CI can pass.
