@@ -1,6 +1,6 @@
 import { takeSnapshot } from '@/lib/cron/snapshot';
 
-export default async function GET() {
+export async function GET() {
   try {
     await takeSnapshot();
     return Response.json({ status: 'ok' });
