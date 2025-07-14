@@ -1,6 +1,6 @@
 import { sendWeeklySummaries } from '@/lib/cron/summary';
 
-export default async function GET() {
+export async function GET() {
   try {
     await sendWeeklySummaries();
     return Response.json({ status: 'ok' });
