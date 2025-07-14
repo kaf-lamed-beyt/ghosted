@@ -16,6 +16,9 @@ export async function sendWeeklySummaries() {
     const newFollowers = latest.filter((f) => !previousSet.has(f.username));
     const ghosts = previous.filter((f) => !currentSet.has(f.username));
 
+    newFollowers.sort((a, b) => a.username.localeCompare(b.username));
+    ghosts.sort((a, b) => a.username.localeCompare(b.username));
+
     if (newFollowers.length === 0 && ghosts.length === 0) continue;
 
     await sendEmail({
