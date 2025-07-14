@@ -1,7 +1,7 @@
 import { resend } from '../resend';
 import { Follower } from './db';
 import { GhostedSummary } from '../../../emails/summary';
-import { EMAIL_DOMAIN } from '../constants';
+import { EMAIL_DOMAIN, NODE_ENV } from '../constants';
 
 export type EmailPayload = {
   to: string;
@@ -30,10 +30,13 @@ export async function sendEmail(payload: EmailPayload) {
     subject = `🙌🏽 Idan! ${newFollowersCount} people followed you recently`;
   }
 
+  const domain =
+    NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
+
   try {
     const response = await resend.emails.send({
       to,
-      from: `"Ghosted!" <${EMAIL_DOMAIN}>`,
+      from: `"Ghosted!" <${domain}>`,
       subject: subject,
       react: GhostedSummary({ username, newFollowers, ghosts }),
     });

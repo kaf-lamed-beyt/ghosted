@@ -10,8 +10,16 @@ export default async function Home() {
         <Text fontSize="80px" fontWeight="800" textAlign="center">
           Ghosted
         </Text>
-        <Text color="grey" fontSize="22px" mt="-1em">
+        <Text color="grey" fontSize="22px" mt="-1em" textAlign="center">
           GitHub followers come and go &mdash; catch who left. 👻
+        </Text>
+        <Text
+          color="var(--color-text-disabled)"
+          fontSize="sm"
+          textAlign="center"
+          mt="0.5em">
+          We take bi-hourly snapshots to spot changes fast &mdash; and send you
+          a weekly summary so you don’t miss a thing.
         </Text>
       </Stack>
       <Center gap=".4em">

@@ -4,7 +4,6 @@ import {
   Box,
   Text,
   VStack,
-  Spinner,
   Avatar,
   HStack,
   Tabs,
@@ -19,6 +18,7 @@ import { MapPinIcon, UsersIcon } from '@phosphor-icons/react';
 import { useSWR } from '@/lib/swr';
 import { Follower, User } from '@/lib/server/db';
 import { GitHubUser } from '@/components/github-user';
+import { FollowersGhosts } from '@/components/skeletons/ghosts';
 
 export default function Dashboard({ user }: { user: User }) {
   const { data, isLoading, error } = useSWR('/api/followers');
@@ -84,9 +84,9 @@ export default function Dashboard({ user }: { user: User }) {
               <HStack spacing={1}>
                 <Text fontSize="sm" color="var(--color-text-disabled)">
                   <Text as="span" fontWeight="bold" color="white">
-                    {user.following}
+                    {ghostsCount}
                   </Text>{' '}
-                  following
+                  ghost{ghostsCount > 1 || ghostsCount === 0 ? 's' : ''}
                 </Text>
               </HStack>
             </HStack>
@@ -106,17 +106,12 @@ export default function Dashboard({ user }: { user: User }) {
       </Box>
 
       {isLoading ? (
-        <VStack h="40vh" justify="center" align="center" width="100%">
-          <Spinner
-            size="lg"
-            thickness="3px"
-            emptyColor="var(--color-slate)"
-            color="var(--color-text-disabled)"
-            speed="0.6s"
-          />
-          <Text color="var(--color-text-disabled)">
-            Loading your followers...
-          </Text>
+        <VStack
+          h="40vh"
+          width="100%"
+          spacing={{ lg: 5, md: 3, base: 3 }}
+          mt={{ lg: '2em', md: '0', base: '0' }}>
+          <FollowersGhosts />
         </VStack>
       ) : error ? (
         <Text color="red.400">Failed to load follower data.</Text>

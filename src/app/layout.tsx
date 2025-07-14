@@ -15,8 +15,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '👻 Ghosted',
-  description: 'Followers come and go. Ghosted knows',
+  title: 'Ghosted',
+  icons: '/ghosted.png',
+  twitter: {
+    card: 'summary_large_image',
+    images: '/ghosted.png',
+    title: 'Ghosted',
+    site: 'ghostd.dev',
+    description: 'Find out when someone follows or unfollows you on GitHub',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'ghostd.dev',
+    title: 'Ghosted',
+    description: 'Find out when someone follows or unfollows you on GitHub',
+    images: ['/ghosted.png'],
+  },
+  description: 'Find out when someone follows or unfollows you on GitHub',
 };
 
 export default function RootLayout({

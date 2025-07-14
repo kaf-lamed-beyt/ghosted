@@ -5,11 +5,6 @@
       "path": "/api/cron/snapshot",
       "schedule": "* */2 * * *",
       "enabled": true
-    },
-    {
-      "path": "/api/cron/summary",
-      "schedule": "0 7 * * 0",
-      "enabled": true
     }
   ]
 }
