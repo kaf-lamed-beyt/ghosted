@@ -8,14 +8,18 @@ export default async function Home() {
     <Center flexFlow="column" height="100vh" gap="2em">
       <Stack direction="column">
         <Text fontSize="80px" fontWeight="800" textAlign="center">
-          Ghosted
+          Ghosted.
         </Text>
-        <Text color="grey" fontSize="22px" mt="-1em" textAlign="center">
+        <Text
+          color="grey"
+          fontSize={{ lg: '22px', md: '18px', base: '18px' }}
+          mt="-1em"
+          textAlign="center">
           GitHub followers come and go &mdash; catch who left. 👻
         </Text>
         <Text
           color="var(--color-text-disabled)"
-          fontSize="sm"
+          fontSize={{ lg: 'md', md: 'md', base: 'sm' }}
           textAlign="center"
           mt="0.5em">
           We take bi-hourly snapshots to spot changes fast &mdash; and send you
