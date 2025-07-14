@@ -1,7 +1,7 @@
 import { takeSnapshot } from '@/lib/cron/snapshot';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 
-export async function handler() {
+export const POST = verifySignatureAppRouter(async () => {
   try {
     await takeSnapshot();
     return Response.json({ status: 'ok' });
@@ -9,6 +9,4 @@ export async function handler() {
     console.error(error);
     return Response.json({ error: 'failed' }, { status: 500 });
   }
-}
-
-export const POST = verifySignatureAppRouter(handler);
+});

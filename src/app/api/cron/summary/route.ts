@@ -1,7 +1,7 @@
 import { sendWeeklySummaries } from '@/lib/cron/summary';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 
-export async function handler() {
+export const POST = verifySignatureAppRouter(async () => {
   try {
     await sendWeeklySummaries();
     return Response.json({ status: 'ok' });
@@ -12,6 +12,4 @@ export async function handler() {
       { status: 500 }
     );
   }
-}
-
-export const POST = verifySignatureAppRouter(handler);
+});
