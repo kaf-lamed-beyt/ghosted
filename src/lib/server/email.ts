@@ -21,11 +21,11 @@ export async function sendEmail(payload: EmailPayload) {
   if (ghostCount > 0 && newFollowersCount > 0) {
     subject = `Mixed vibes: ${newFollowersCount} followed you, ${ghostCount} unfollowed`;
   } else if (ghostCount === 1) {
-    subject = '👻 One person ghosted you on GitHub, this week';
+    subject = '👻 One person ghosted you on GitHub, last week';
   } else if (ghostCount > 1) {
     subject = `👻 You've been ghosted by ${ghostCount} people`;
   } else if (newFollowersCount === 1) {
-    subject = `🎉 This week, one new person followed you on GitHub`;
+    subject = `🎉 Last week, one new person followed you on GitHub`;
   } else if (newFollowersCount > 1) {
     subject = `🙌🏽 Idan! ${newFollowersCount} people followed you recently`;
   }
