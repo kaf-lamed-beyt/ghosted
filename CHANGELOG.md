@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.1...v0.0.2) (2025-07-27)
+
+
+### Bug Fixes
+
+* fixed a bug where db writes were performed on every snapshot ([#8](https://github.com/kaf-lamed-beyt/ghosted/issues/8)) ([66fe49e](https://github.com/kaf-lamed-beyt/ghosted/commit/66fe49e27fa7a69a6982d59b260f23560515fc06))
+* **ui:** fixed a ui bug where followers count is stale in the TabItem ([#10](https://github.com/kaf-lamed-beyt/ghosted/issues/10)) ([50f5b64](https://github.com/kaf-lamed-beyt/ghosted/commit/50f5b641ff8bd46fe9a761c820b0f073bda60412))
+
 ### 0.0.1 (2025-07-14)
 
 
