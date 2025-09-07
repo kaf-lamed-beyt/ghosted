@@ -58,7 +58,7 @@ const SUBJECTS = [
 export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
   const users = await db().humans();
   const human = users.find((human) => human.githubId === user.githubId);
-  if (human) return
+  if (human) return;
 
   const domain =
     NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
@@ -68,7 +68,7 @@ export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
   try {
     const response = await resend.emails.send({
       subject,
-      to: user.email ?? "",
+      to: user.email ?? '',
       react: Welcome({ user: user.name ?? '' }),
       from: `"Seven from Ghosted!" <${domain}>`,
     });
