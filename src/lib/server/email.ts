@@ -1,7 +1,8 @@
 import { resend } from '../resend';
-import { Follower } from './db';
+import { db, Follower, User } from './db';
 import { GhostedSummary } from '../../../emails/summary';
 import { EMAIL_DOMAIN, NODE_ENV } from '../constants';
+import { Welcome } from '../../../emails/welcome';
 
 export type EmailPayload = {
   to: string;
@@ -43,5 +44,38 @@ export async function sendEmail(payload: EmailPayload) {
     console.log('Idan! Delivery to shana! 🔥', response);
   } catch (error) {
     console.error('nawa for you o!', error);
+  }
+}
+
+const SUBJECTS = [
+  'They unfollowed you? Now, you’ll know. 😉',
+  'Because silence is not an option…',
+  'The receipts are on their way 📉',
+  'Petty looks good on you 👀',
+  'Congrats — you’ve leveled up in pettiness 🎖️',
+];
+
+export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
+  const users = await db().humans();
+  const human = users.find((human) => human.githubId === user.githubId);
+  if (human) {
+    console.log("Yes. there's a human here!");
+  }
+
+  const domain =
+    NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
+  const index = Math.floor(Math.random() * SUBJECTS.length);
+  const subject = SUBJECTS[index];
+
+  try {
+    const response = await resend.emails.send({
+      subject,
+      to: user.email ?? "",
+      react: Welcome({ user: user.name ?? '' }),
+      from: `"Seven from Ghosted!" <${domain}>`,
+    });
+    console.log('Idan, Welcome! 🔥', response);
+  } catch (error) {
+    console.error(error);
   }
 }

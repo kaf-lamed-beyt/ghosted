@@ -5,6 +5,7 @@ import {
 } from '@/lib/constants';
 import { protector } from '@/lib/crypto';
 import { db } from '@/lib/server/db';
+import { welcome } from '@/lib/server/email';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
@@ -58,6 +59,12 @@ export async function GET(req: Request) {
     name: user.data.name,
     bio: user.data.bio,
     location: user.data.location,
+  });
+
+  await welcome({
+    githubId: user.data.id,
+    email: user.data.email,
+    name: user.data.name,
   });
 
   const cookieStore = await cookies();
