@@ -58,9 +58,7 @@ const SUBJECTS = [
 export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
   const users = await db().humans();
   const human = users.find((human) => human.githubId === user.githubId);
-  if (human) {
-    console.log("Yes. there's a human here!");
-  }
+  if (human) return
 
   const domain =
     NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
