@@ -38,8 +38,3 @@ export const emailHeading = {
   fontSize: '20px',
   marginBottom: '12px',
 };
-
-export const linkStyle = {
-  color: 'var(--color-text-disabled)',
-  textDecoration: 'underline',
-};
