@@ -70,6 +70,7 @@ interface GHFollowersDatabase {
   getUserByGitHubId: (id: number) => Promise<User | null>;
   getFollowers: (id: number) => Promise<Follower[]>;
   getGhosts: (id: number) => Promise<Ghost[]>;
+  removeGhosts: (usernames: string[], userId: number) => Promise<void>;
   updateFollowerFollowState: (params: FollowStateUpdateParams) => Promise<void>;
 }
 
@@ -99,10 +100,18 @@ export function db(): GHFollowersDatabase {
           (g) => sql<Ghost[]>`
             insert into unfollowers (username, avatar_url, bio, location, github_id, name, user_id, unfollowed_at)
             values (${g.username}, ${g.avatarUrl || ''}, ${g.bio}, ${g.location}, ${g.githubId}, ${g.name}, ${userId}, ${now})
-            on conflict (github_id) do nothing
+            on conflict (github_id, user_id)
+            do update set unfollowed_at = excluded.unfollowed_at
           `
         )
       );
+    },
+    async removeGhosts(usernames, userId) {
+      await sql`
+        delete from unfollowers
+        where user_id = ${userId}
+        and usernames = any(${usernames})
+      `;
     },
     async getFollowersByDate(date) {
       const dateStr = date.toISOString().split('T')[0];
