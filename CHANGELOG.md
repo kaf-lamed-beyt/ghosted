@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.2...v0.0.3) (2025-10-23)
+
+
+### Bug Fixes
+
+* inconsistent followers and ghosts lookup ([#15](https://github.com/kaf-lamed-beyt/ghosted/issues/15)) ([b4fd601](https://github.com/kaf-lamed-beyt/ghosted/commit/b4fd601d3395e0afc302fa0ce86117d4e2bd4ed0))
+
 ### [0.0.2](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.1...v0.0.2) (2025-07-27)
 
 
