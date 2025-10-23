@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "db:migrate": "node ./scripts/migrate.mjs",
+    "db:migrate:prod": "NODE_ENV=production node ./scripts/migrate.mjs",
     "lint": "next lint --quiet",
     "build": "cross-env TSC_COMPILE_ON_ERROR=true next build",
     "prepare": "husky",

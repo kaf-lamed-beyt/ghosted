@@ -1,7 +1,11 @@
 import { fileURLToPath } from 'url';
 import postgres from 'postgres';
 import shift from 'postgres-shift';
-import '@dotenvx/dotenvx/config';
+import { config } from '@dotenvx/dotenvx';
+
+const envFile =
+  process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+config({ path: envFile });
 
 const { PGHOST, PGPORT, PGDATABASE, PGUSERNAME, PGPASSWORD, PGSSLMODE } =
   process.env;
