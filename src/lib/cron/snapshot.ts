@@ -13,14 +13,28 @@ export async function takeSnapshot() {
     const prevUsernames = new Set(prevSnapshot.map((f) => f.username));
     const newUsernames = new Set(newSnapshot.map((f) => f.username));
 
+    const ghosts = await db().getGhosts(user.id);
+    const ghostUsernames = new Set(ghosts.map((g) => g.username));
+
     if (newSnapshot.length > prevSnapshot.length) {
       // data is always fresh from GitHub so, pack from there like omi obe!
       const followers = newSnapshot.filter(
         (person) => !prevUsernames.has(person.username)
       );
 
-      if (followers.length > 0)
+      if (followers.length > 0) {
         await db().addFollowers(followers, user.githubId);
+
+        // checking to see if this user has re-followers and update the ghosts list
+        const reFollowers = followers.filter((f) =>
+          ghostUsernames.has(f.username)
+        );
+        if (reFollowers.length > 0)
+          await db().removeGhosts(
+            reFollowers.map((f) => f.username),
+            user.id
+          );
+      }
     } else if (newSnapshot.length < prevSnapshot.length) {
       const unfollowers = prevSnapshot.filter(
         (person) => !newUsernames.has(person.username)
@@ -51,8 +65,18 @@ export async function takeSnapshot() {
           (person) => !newUsernames.has(person.username)
         );
 
-        if (newFollowers.length > 0)
+        if (newFollowers.length > 0) {
           await db().addFollowers(newFollowers, user.githubId);
+
+          const reFollowers = newFollowers.filter((f) =>
+            ghostUsernames.has(f.username)
+          );
+          if (reFollowers.length > 0)
+            await db().removeGhosts(
+              reFollowers.map((f) => f.username),
+              user.id
+            );
+        }
         if (unfollowers.length > 0) {
           const ghosts: Ghost[] = unfollowers.map((ghost) => ({
             ...ghost,
