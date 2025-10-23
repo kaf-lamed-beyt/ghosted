@@ -1,31 +1,31 @@
 import { db } from '@/lib/server/db';
 import { sendEmail } from '@/lib/server/email';
+import { takeSnapshot } from './snapshot';
 
 export async function sendWeeklySummaries() {
+  await takeSnapshot();
   const users = await db().humans();
 
   for (const user of users) {
-    const snapshots = await db().getRecentSnapshotsForUser(user.githubId);
+    const currrentFollowers = await db().getFollowers(user.githubId);
+    const ghosts = await db().getGhosts(user.id);
 
-    if (snapshots.length < 2) continue;
-    const [latest, previous] = snapshots;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const recentGhosts = ghosts.filter((g) => g.unfollowedAt >= oneWeekAgo);
+    const newFollowers = currrentFollowers.filter(
+      (f) => f.fetchedAt >= oneWeekAgo
+    );
 
-    const currentSet = new Set(latest.map((f) => f.username));
-    const previousSet = new Set(previous.map((f) => f.username));
-
-    const newFollowers = latest.filter((f) => !previousSet.has(f.username));
-    const ghosts = previous.filter((f) => !currentSet.has(f.username));
-
+    if (newFollowers.length === 0 && recentGhosts.length === 0) continue;
     newFollowers.sort((a, b) => a.username.localeCompare(b.username));
-    ghosts.sort((a, b) => a.username.localeCompare(b.username));
-
-    if (newFollowers.length === 0 && ghosts.length === 0) continue;
+    recentGhosts.sort((a, b) => a.username.localeCompare(b.username));
 
     await sendEmail({
       to: String(user.email),
       username: user.username,
       newFollowers,
-      ghosts,
+      ghosts: recentGhosts,
     });
   }
 }

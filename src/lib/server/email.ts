@@ -1,5 +1,5 @@
 import { resend } from '../resend';
-import { db, Follower, User } from './db';
+import { db, Follower, Ghost, User } from './db';
 import { GhostedSummary } from '../../../emails/summary';
 import { EMAIL_DOMAIN, NODE_ENV } from '../constants';
 import { Welcome } from '../../../emails/welcome';
@@ -8,7 +8,7 @@ export type EmailPayload = {
   to: string;
   username: string;
   newFollowers: Follower[];
-  ghosts: Follower[];
+  ghosts: Ghost[];
 };
 
 export async function sendEmail(payload: EmailPayload) {
@@ -58,7 +58,10 @@ const SUBJECTS = [
 export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
   const users = await db().humans();
   const human = users.find((human) => human.githubId === user.githubId);
-  if (human) return;
+  if (human) {
+    console.log('user exists');
+    return;
+  }
 
   const domain =
     NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
