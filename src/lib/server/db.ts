@@ -45,23 +45,31 @@ export interface Follower {
   isFollowing: boolean;
 }
 
+export interface Ghost extends Omit<Follower, 'fetchedAt'> {
+  userId: number;
+  unfollowedAt: Date;
+}
+
 export interface User extends Omit<Follower, 'fetchedAt' | 'isFollowing'> {
   email?: string | null;
   createdAt: Date;
   token?: string;
   followers: number;
   following: number;
+  id: number;
 }
 
 interface GHFollowersDatabase {
   humans: () => Promise<User[]>;
   addFollowers: (followers: Follower[], githubId: number) => Promise<void>;
+  addGhosts: (ghosts: Ghost[], userId: number) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
   getMostRecentSnapshot: () => Promise<Follower[]>;
   clearOldSnapshots?: (retainDays?: number) => Promise<void>;
-  createUser: (user: User) => Promise<void>;
+  createUser: (user: Omit<User, 'id'>) => Promise<void>;
   getUserByGitHubId: (id: number) => Promise<User | null>;
-  getRecentSnapshotsForUser: (id: number) => Promise<Follower[][]>;
+  getFollowers: (id: number) => Promise<Follower[]>;
+  getGhosts: (id: number) => Promise<Ghost[]>;
   updateFollowerFollowState: (params: FollowStateUpdateParams) => Promise<void>;
 }
 
@@ -80,6 +88,18 @@ export function db(): GHFollowersDatabase {
           (f) => sql<Follower[]>`
             insert into followers (username, avatar_url, bio, location, fetched_at, github_id, name, is_following)
             values (${f.username}, ${f.avatarUrl || ''}, ${f.bio}, ${f.location}, ${now}, ${githubId}, ${f.name}, ${f.isFollowing})
+          `
+        )
+      );
+    },
+    async addGhosts(ghosts, userId) {
+      const now = new Date();
+      await Promise.all(
+        ghosts.map(
+          (g) => sql<Ghost[]>`
+            insert into unfollowers (username, avatar_url, bio, location, github_id, name, user_id, unfollowed_at)
+            values (${g.username}, ${g.avatarUrl || ''}, ${g.bio}, ${g.location}, ${g.githubId}, ${g.name}, ${userId}, ${now})
+            on conflict (github_id) do nothing
           `
         )
       );
@@ -133,34 +153,21 @@ export function db(): GHFollowersDatabase {
       `;
       return result;
     },
-    async getRecentSnapshotsForUser(id) {
+    async getFollowers(id) {
       const rows = await sql<Follower[]>`
           select *
           from followers
           where github_id = ${id}
-            and fetched_at in (
-              select distinct fetched_at
-              from followers
-              where github_id = ${id}
-              order by fetched_at DESC
-              limit 2
-            )
-          order by fetched_at desc
         `;
 
-      const grouped = rows.reduce(
-        (acc, row) => {
-          const key = row.fetchedAt.toISOString();
-          if (!acc[key]) acc[key] = [];
-          acc[key].push(row);
-          return acc;
-        },
-        {} as Record<string, Follower[]>
-      );
-
-      // we should just get the most recent two updates via timestamp
-      const snapshots = Object.values(grouped).slice(0, 2);
-      return snapshots;
+      return rows;
+    },
+    async getGhosts(id) {
+      return await sql<Ghost[]>`
+          select *
+          from unfollowers
+          where user_id = ${id}
+        `;
     },
     async updateFollowerFollowState(args) {
       await sql`
