@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.4...v0.0.5) (2025-10-24)
+
+
+### Bug Fixes
+
+* did a backup of some sorts  ([#17](https://github.com/kaf-lamed-beyt/ghosted/issues/17)) ([206a044](https://github.com/kaf-lamed-beyt/ghosted/commit/206a044b5eca4dfe0507d42708e0effc6e84f80b))
+* fixed a bug where the welcome email never gets sent ([#20](https://github.com/kaf-lamed-beyt/ghosted/issues/20)) ([be08c39](https://github.com/kaf-lamed-beyt/ghosted/commit/be08c39d32b6d1914649555befc48da6173e15a5))
+* ghost insertion into unfollowers list ([#18](https://github.com/kaf-lamed-beyt/ghosted/issues/18)) ([9ef5fa7](https://github.com/kaf-lamed-beyt/ghosted/commit/9ef5fa77042faedc7f76d226ddc81647adc423dd))
+
 ### [0.0.4](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.2...v0.0.4) (2025-10-23)
 
 
