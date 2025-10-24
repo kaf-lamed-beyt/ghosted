@@ -63,7 +63,7 @@ export async function GET(req: Request) {
 
   await welcome({
     githubId: user.data.id,
-    email: user.data.email,
+    email: primaryEmail,
     name: user.data.name,
   });
 
