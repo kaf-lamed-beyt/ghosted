@@ -118,7 +118,7 @@ export function db(): GHFollowersDatabase {
         delete from followers
         where github_id = ${githubId}
         and username = any(${usernames})
-      `
+      `;
     },
     async getFollowersByDate(date) {
       const dateStr = date.toISOString().split('T')[0];

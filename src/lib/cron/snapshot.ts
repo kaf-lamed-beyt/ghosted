@@ -1,7 +1,6 @@
 import { db, Ghost } from '@/lib/server/db';
 import { GITHUB_PAT } from '../constants';
 import { fetchGitHubFollowersForUser } from '../github';
-import { filter } from '@chakra-ui/react';
 
 export async function takeSnapshot() {
   const users = await db().humans();
