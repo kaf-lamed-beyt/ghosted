@@ -64,12 +64,12 @@ interface GHFollowersDatabase {
   addFollowers: (followers: Follower[], githubId: number) => Promise<void>;
   addGhosts: (ghosts: Ghost[], userId: number) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
-  getMostRecentSnapshot: () => Promise<Follower[]>;
   clearOldSnapshots?: (retainDays?: number) => Promise<void>;
   createUser: (user: Omit<User, 'id'>) => Promise<void>;
   getUserByGitHubId: (id: number) => Promise<User | null>;
   getFollowers: (id: number) => Promise<Follower[]>;
   getGhosts: (id: number) => Promise<Ghost[]>;
+  removeFollowers: (usernames: string[], userId: number) => Promise<void>;
   removeGhosts: (usernames: string[], userId: number) => Promise<void>;
   updateFollowerFollowState: (params: FollowStateUpdateParams) => Promise<void>;
 }
@@ -110,8 +110,15 @@ export function db(): GHFollowersDatabase {
       await sql`
         delete from unfollowers
         where user_id = ${userId}
-        and usernames = any(${usernames})
+        and username = any(${usernames})
       `;
+    },
+    async removeFollowers(usernames, githubId) {
+      await sql`
+        delete from followers
+        where github_id = ${githubId}
+        and username = any(${usernames})
+      `
     },
     async getFollowersByDate(date) {
       const dateStr = date.toISOString().split('T')[0];
@@ -121,12 +128,6 @@ export function db(): GHFollowersDatabase {
         where fetched_at::date = ${dateStr}
       `;
       return result;
-    },
-    async clearOldSnapshots(retainDays = 30) {
-      await sql`
-        delete from followers
-        where fetched_at < NOW() - INTERVAL '${retainDays} days'
-      `;
     },
     async createUser(user) {
       await sql`
@@ -151,16 +152,6 @@ export function db(): GHFollowersDatabase {
         select * from users where github_id = ${id}
       `;
       return user;
-    },
-    async getMostRecentSnapshot() {
-      const result = await sql<Follower[]>`
-        select username, avatar_url, fetched_at
-        from followers
-        where fetched_at = (
-          select max(fetched_at) from followers
-        )
-      `;
-      return result;
     },
     async getFollowers(id) {
       const rows = await sql<Follower[]>`
