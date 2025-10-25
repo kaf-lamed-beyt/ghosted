@@ -19,6 +19,6 @@ export async function getSession(): Promise<User | null> {
 
   if (!session?.id || isNaN(session.id)) return null;
 
-  const user = await db().getUserByGitHubId(session.id);
+  const user = await db().human(session.id);
   return user ? { ...user, token: session.token } : null;
 }
