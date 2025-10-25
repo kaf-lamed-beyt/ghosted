@@ -61,12 +61,12 @@ export interface User extends Omit<Follower, 'fetchedAt' | 'isFollowing'> {
 
 interface GHFollowersDatabase {
   humans: () => Promise<User[]>;
+  human: (id: number) => Promise<User | null>;
   addFollowers: (followers: Follower[], githubId: number) => Promise<void>;
   addGhosts: (ghosts: Ghost[], userId: number) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
   clearOldSnapshots?: (retainDays?: number) => Promise<void>;
   createUser: (user: Omit<User, 'id'>) => Promise<void>;
-  getUserByGitHubId: (id: number) => Promise<User | null>;
   getFollowers: (id: number) => Promise<Follower[]>;
   getGhosts: (id: number) => Promise<Ghost[]>;
   removeFollowers: (usernames: string[], userId: number) => Promise<void>;
@@ -81,6 +81,13 @@ export function db(): GHFollowersDatabase {
         select * from users
       `;
       return result;
+    },
+    async human(id) {
+      const [data] = await sql<User[]>`
+        select * from users
+        where github_id = ${id}
+      `;
+      return data;
     },
     async addFollowers(followers, githubId) {
       const now = new Date();
@@ -146,12 +153,6 @@ export function db(): GHFollowersDatabase {
         )
         on conflict (github_id) do nothing
       `;
-    },
-    async getUserByGitHubId(id) {
-      const [user] = await sql<User[]>`
-        select * from users where github_id = ${id}
-      `;
-      return user;
     },
     async getFollowers(id) {
       const rows = await sql<Follower[]>`

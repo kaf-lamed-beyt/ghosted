@@ -48,18 +48,20 @@ export async function GET(req: Request) {
     ? emails.find((e) => e.primary && e.verified)?.email
     : null;
 
-  await db().createUser({
-    githubId: user.data.id,
-    username: user.data.login,
-    avatarUrl: user.data.avatar_url,
-    email: primaryEmail,
-    createdAt: new Date(),
-    following: user.data.following,
-    followers: user.data.followers,
-    name: user.data.name,
-    bio: user.data.bio,
-    location: user.data.location,
-  });
+  const human = await db().human(user.data.id);
+  if (!human)
+    await db().createUser({
+      githubId: user.data.id,
+      username: user.data.login,
+      avatarUrl: user.data.avatar_url,
+      email: primaryEmail,
+      createdAt: new Date(),
+      following: user.data.following,
+      followers: user.data.followers,
+      name: user.data.name,
+      bio: user.data.bio,
+      location: user.data.location,
+    });
 
   await welcome({
     githubId: user.data.id,

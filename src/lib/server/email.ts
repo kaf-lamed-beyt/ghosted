@@ -56,8 +56,7 @@ const SUBJECTS = [
 ];
 
 export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
-  const users = await db().humans();
-  const human = users.find((human) => human.githubId === user.githubId);
+  const human = await db().human(user.githubId);
   if (human) return;
 
   const domain =
