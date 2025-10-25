@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.5...v0.0.6) (2025-10-25)
+
+
+### Bug Fixes
+
+* fixed a bug where welcome emails and db writes for new users happen on oauth ([#21](https://github.com/kaf-lamed-beyt/ghosted/issues/21)) ([a948181](https://github.com/kaf-lamed-beyt/ghosted/commit/a9481812c72c49779f42b20592173e09f356f15a))
+
 ### [0.0.5](https://github.com/kaf-lamed-beyt/ghosted/compare/v0.0.4...v0.0.5) (2025-10-24)
 
 
