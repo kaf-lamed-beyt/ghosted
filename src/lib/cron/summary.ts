@@ -14,7 +14,7 @@ export async function sendWeeklySummaries() {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     const recentGhosts = ghosts.filter((g) => g.unfollowedAt >= oneWeekAgo);
     const newFollowers = currrentFollowers.filter(
-      (f) => f.fetchedAt >= oneWeekAgo
+      (f) => f.firstFollowedAt >= oneWeekAgo
     );
 
     if (newFollowers.length === 0 && recentGhosts.length === 0) continue;
