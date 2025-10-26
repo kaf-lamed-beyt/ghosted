@@ -43,6 +43,7 @@ export interface Follower {
   location: string | null;
   name: string | null;
   isFollowing: boolean;
+  firstFollowedAt: Date;
 }
 
 export interface Ghost extends Omit<Follower, 'fetchedAt'> {
@@ -66,7 +67,7 @@ interface GHFollowersDatabase {
   addGhosts: (ghosts: Ghost[], userId: number) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
   clearOldSnapshots?: (retainDays?: number) => Promise<void>;
-  createUser: (user: Omit<User, 'id'>) => Promise<void>;
+  createUser: (user: Omit<User, 'id' | 'firstFollowedAt'>) => Promise<void>;
   getFollowers: (id: number) => Promise<Follower[]>;
   getGhosts: (id: number) => Promise<Ghost[]>;
   removeFollowers: (usernames: string[], userId: number) => Promise<void>;
@@ -94,8 +95,16 @@ export function db(): GHFollowersDatabase {
       await Promise.all(
         followers.map(
           (f) => sql<Follower[]>`
-            insert into followers (username, avatar_url, bio, location, fetched_at, github_id, name, is_following)
-            values (${f.username}, ${f.avatarUrl || ''}, ${f.bio}, ${f.location}, ${now}, ${githubId}, ${f.name}, ${f.isFollowing})
+            insert into followers (username, avatar_url, bio, location, fetched_at, github_id, name, is_following, first_followed_at)
+            values (${f.username}, ${f.avatarUrl || ''}, ${f.bio}, ${f.location}, ${now}, ${githubId}, ${f.name}, ${f.isFollowing}, ${now})
+            on conflict (username, github_id)
+            do update set
+              fetched_at = excluded.fetched_at,
+              avatar_url = excluded.avatar_url,
+              bio = excluded.bio,
+              location = excluded.location,
+              name = excluded.name,
+              is_following = excluded.is_following
           `
         )
       );
