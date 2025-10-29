@@ -55,9 +55,11 @@ const SUBJECTS = [
   'Congrats — you’ve leveled up in pettiness 🎖️',
 ];
 
-export async function welcome(user: Pick<User, 'githubId' | 'email' | 'name'>) {
+export async function welcome(
+  user: Pick<User, 'createdAt' | 'githubId' | 'email' | 'name'>
+) {
   const human = await db().human(user.githubId);
-  if (human) return;
+  if (new Date(human?.createdAt as Date).getDate() !== new Date().getDate()) return;
 
   const domain =
     NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';

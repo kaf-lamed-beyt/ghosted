@@ -49,7 +49,7 @@ export async function GET(req: Request) {
     : null;
 
   const human = await db().human(user.data.id);
-  if (!human)
+  if (!human) {
     await db().createUser({
       githubId: user.data.id,
       username: user.data.login,
@@ -62,11 +62,13 @@ export async function GET(req: Request) {
       bio: user.data.bio,
       location: user.data.location,
     });
+  }
 
   await welcome({
     githubId: user.data.id,
     email: primaryEmail,
     name: user.data.name,
+    createdAt: human?.createdAt as Date,
   });
 
   const cookieStore = await cookies();
