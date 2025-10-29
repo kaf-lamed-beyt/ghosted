@@ -59,7 +59,8 @@ export async function welcome(
   user: Pick<User, 'createdAt' | 'githubId' | 'email' | 'name'>
 ) {
   const human = await db().human(user.githubId);
-  if (new Date(human?.createdAt as Date).getDate() !== new Date().getDate()) return;
+  if (new Date(human?.createdAt as Date).getDate() !== new Date().getDate())
+    return;
 
   const domain =
     NODE_ENV === 'production' ? EMAIL_DOMAIN : 'onboarding@resend.dev';
