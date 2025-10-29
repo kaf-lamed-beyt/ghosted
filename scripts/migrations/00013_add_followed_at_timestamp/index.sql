@@ -1,0 +1,2 @@
+ALTER TABLE followers
+ADD COLUMN IF NOT EXISTS first_followed_at TIMESTAMP DEFAULT NOW();
