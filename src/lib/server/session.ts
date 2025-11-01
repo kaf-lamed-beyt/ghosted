@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { db, User } from './db';
+import { db, Platform, User } from './db';
 import { antagonist } from '../crypto';
 
 export async function getSession(): Promise<User | null> {
@@ -9,7 +9,7 @@ export async function getSession(): Promise<User | null> {
   if (!value) return null;
 
   const data = antagonist(value);
-  let session: { id: number; token: string };
+  let session: { platformId: string; platform: Platform; token: string };
   try {
     session = JSON.parse(String(data));
   } catch (error) {
@@ -17,8 +17,8 @@ export async function getSession(): Promise<User | null> {
     return null;
   }
 
-  if (!session?.id || isNaN(session.id)) return null;
+  if (!session?.platformId || !session?.platform) return null;
 
-  const user = await db().human(session.id);
+  const user = await db().human(session.platformId, session.platform);
   return user ? { ...user, token: session.token } : null;
 }

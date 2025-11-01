@@ -1,22 +1,35 @@
-import { db, Ghost } from '@/lib/server/db';
+import { db, Follower, Ghost, User } from '@/lib/server/db';
 import { GITHUB_PAT } from '../constants';
 import { fetchGitHubFollowersForUser } from '../github';
+import { fetchTikTokFollowersForUser } from '../tiktok';
+
+async function fetchFollowersForPlatform(user: User, token: string): Promise<Follower[]> {
+  if (user.platform === 'github') {
+    return await fetchGitHubFollowersForUser(user, token);
+  } else if (user.platform === 'tiktok') {
+    return await fetchTikTokFollowersForUser(user, token);
+  }
+  throw new Error(`Unsupported platform: ${user.platform}`);
+}
 
 export async function takeSnapshot() {
   const users = await db().humans();
   if (!users || users.length === 0) return;
 
   for (const user of users) {
-    const newSnapshot = await fetchGitHubFollowersForUser(user, GITHUB_PAT!);
-    const prevSnapshot = await db().getFollowers(user.githubId);
+    // Use the user's stored token (from session) or platform-specific token
+    const token = user.platform === 'github' ? GITHUB_PAT! : user.token!;
+    
+    const newSnapshot = await fetchFollowersForPlatform(user, token);
+    const prevSnapshot = await db().getFollowers(user.id, user.platform);
 
     const prevUsernames = new Set(prevSnapshot.map((f) => f.username));
     const newUsernames = new Set(newSnapshot.map((f) => f.username));
 
-    const ghosts = await db().getGhosts(user.id);
+    const ghosts = await db().getGhosts(user.id, user.platform);
     const ghostUsernames = new Set(ghosts.map((g) => g.username));
 
-    const followers = await db().getFollowers(user.githubId);
+    const followers = await db().getFollowers(user.id, user.platform);
     const ghostsInTheFollowersList = followers.filter((f) =>
       ghostUsernames.has(f.username)
     );
@@ -24,7 +37,8 @@ export async function takeSnapshot() {
     if (ghostsInTheFollowersList.length > 0) {
       await db().removeFollowers(
         ghostsInTheFollowersList.map((g) => g.username),
-        user.githubId
+        user.id,
+        user.platform
       );
       console.log(
         'removed ghosts from the followers list',
@@ -46,7 +60,8 @@ export async function takeSnapshot() {
         if (reFollowers.length > 0)
           await db().removeGhosts(
             reFollowers.map((f) => f.username),
-            user.id
+            user.id,
+            user.platform
           );
       }
     } else if (newSnapshot.length < prevSnapshot.length) {
@@ -61,7 +76,7 @@ export async function takeSnapshot() {
           unfollowedAt: new Date(),
         }));
         console.log('ghosts', ghosts);
-        await db().addGhosts(ghosts, user.id);
+        await db().addGhosts(ghosts, user.id, user.platform);
       }
     } else {
       // Same length, definitely need to check if it is the same followers
@@ -80,7 +95,7 @@ export async function takeSnapshot() {
         );
 
         if (newFollowers.length > 0) {
-          await db().addFollowers(newFollowers, user.githubId);
+          await db().addFollowers(newFollowers, user.id, user.platform);
 
           const reFollowers = newFollowers.filter((f) =>
             ghostUsernames.has(f.username)
@@ -88,7 +103,8 @@ export async function takeSnapshot() {
           if (reFollowers.length > 0)
             await db().removeGhosts(
               reFollowers.map((f) => f.username),
-              user.id
+              user.id,
+              user.platform
             );
         }
         if (unfollowers.length > 0) {
@@ -97,7 +113,7 @@ export async function takeSnapshot() {
             userId: user.id,
             unfollowedAt: new Date(),
           }));
-          await db().addGhosts(ghosts, user.id);
+          await db().addGhosts(ghosts, user.id, user.platform);
         }
       } else {
         console.log(

@@ -34,11 +34,14 @@ const sql = postgres({
   },
 });
 
+export type Platform = 'github' | 'tiktok';
+
 export interface Follower {
   username: string;
+  platform: Platform;
   avatarUrl?: string;
   fetchedAt: Date;
-  githubId: number;
+  userId: number;
   bio: string | null;
   location: string | null;
   name: string | null;
@@ -51,27 +54,35 @@ export interface Ghost extends Omit<Follower, 'fetchedAt'> {
   unfollowedAt: Date;
 }
 
-export interface User extends Omit<Follower, 'fetchedAt' | 'isFollowing'> {
+export interface User {
+  id: number;
+  platform: Platform;
+  platformId: string;
+  username: string;
+  avatarUrl?: string;
   email?: string | null;
   createdAt: Date;
   token?: string;
   followers: number;
   following: number;
-  id: number;
+  name: string | null;
+  bio: string | null;
+  location: string | null;
+  firstFollowedAt: Date;
 }
 
 interface GHFollowersDatabase {
   humans: () => Promise<User[]>;
-  human: (id: number) => Promise<User | null>;
-  addFollowers: (followers: Follower[], githubId: number) => Promise<void>;
-  addGhosts: (ghosts: Ghost[], userId: number) => Promise<void>;
+  human: (platformId: string, platform: Platform) => Promise<User | null>;
+  addFollowers: (followers: Follower[], userId: number, platform: Platform) => Promise<void>;
+  addGhosts: (ghosts: Ghost[], userId: number, platform: Platform) => Promise<void>;
   getFollowersByDate: (date: Date) => Promise<Follower[]>;
   clearOldSnapshots?: (retainDays?: number) => Promise<void>;
   createUser: (user: Omit<User, 'id' | 'firstFollowedAt'>) => Promise<void>;
-  getFollowers: (id: number) => Promise<Follower[]>;
-  getGhosts: (id: number) => Promise<Ghost[]>;
-  removeFollowers: (usernames: string[], userId: number) => Promise<void>;
-  removeGhosts: (usernames: string[], userId: number) => Promise<void>;
+  getFollowers: (userId: number, platform: Platform) => Promise<Follower[]>;
+  getGhosts: (userId: number, platform: Platform) => Promise<Ghost[]>;
+  removeFollowers: (usernames: string[], userId: number, platform: Platform) => Promise<void>;
+  removeGhosts: (usernames: string[], userId: number, platform: Platform) => Promise<void>;
   updateFollowerFollowState: (params: FollowStateUpdateParams) => Promise<void>;
 }
 
@@ -83,21 +94,22 @@ export function db(): GHFollowersDatabase {
       `;
       return result;
     },
-    async human(id) {
+    async human(platformId, platform) {
       const [data] = await sql<User[]>`
         select * from users
-        where github_id = ${id}
+        where platform_id = ${platformId}
+        and platform = ${platform}
       `;
       return data;
     },
-    async addFollowers(followers, githubId) {
+    async addFollowers(followers, userId, platform) {
       const now = new Date();
       await Promise.all(
         followers.map(
           (f) => sql<Follower[]>`
-            insert into followers (username, avatar_url, bio, location, fetched_at, github_id, name, is_following, first_followed_at)
-            values (${f.username}, ${f.avatarUrl || ''}, ${f.bio}, ${f.location}, ${now}, ${githubId}, ${f.name}, ${f.isFollowing}, ${now})
-            on conflict (username, github_id)
+            insert into followers (username, avatar_url, bio, location, fetched_at, user_id, name, is_following, first_followed_at, platform)
+            values (${f.username}, ${f.avatarUrl || ''}, ${f.bio}, ${f.location}, ${now}, ${userId}, ${f.name}, ${f.isFollowing}, ${now}, ${platform})
+            on conflict (username, platform, user_id)
             do update set
               fetched_at = excluded.fetched_at,
               avatar_url = excluded.avatar_url,
@@ -109,30 +121,32 @@ export function db(): GHFollowersDatabase {
         )
       );
     },
-    async addGhosts(ghosts, userId) {
+    async addGhosts(ghosts, userId, platform) {
       const now = new Date();
       await Promise.all(
         ghosts.map(
           (g) => sql<Ghost[]>`
-            insert into unfollowers (username, avatar_url, bio, location, github_id, name, user_id, unfollowed_at)
-            values (${g.username}, ${g.avatarUrl || ''}, ${g.bio}, ${g.location}, ${g.githubId}, ${g.name}, ${userId}, ${now})
-            on conflict (github_id, user_id)
+            insert into unfollowers (username, avatar_url, bio, location, name, user_id, unfollowed_at, platform)
+            values (${g.username}, ${g.avatarUrl || ''}, ${g.bio}, ${g.location}, ${g.name}, ${userId}, ${now}, ${platform})
+            on conflict (username, platform, user_id)
             do update set unfollowed_at = excluded.unfollowed_at
           `
         )
       );
     },
-    async removeGhosts(usernames, userId) {
+    async removeGhosts(usernames, userId, platform) {
       await sql`
         delete from unfollowers
         where user_id = ${userId}
+        and platform = ${platform}
         and username = any(${usernames})
       `;
     },
-    async removeFollowers(usernames, githubId) {
+    async removeFollowers(usernames, userId, platform) {
       await sql`
         delete from followers
-        where github_id = ${githubId}
+        where user_id = ${userId}
+        and platform = ${platform}
         and username = any(${usernames})
       `;
     },
@@ -147,10 +161,11 @@ export function db(): GHFollowersDatabase {
     },
     async createUser(user) {
       await sql`
-        insert into users (email, github_id, location, username, bio, avatar_url, created_at, followers, following, name)
+        insert into users (email, platform, platform_id, location, username, bio, avatar_url, created_at, followers, following, name)
         values (
           ${user.email ?? null},
-          ${user.githubId},
+          ${user.platform},
+          ${user.platformId},
           ${user.location},
           ${user.username},
           ${user.bio},
@@ -160,30 +175,34 @@ export function db(): GHFollowersDatabase {
           ${user.following},
           ${user.name}
         )
-        on conflict (github_id) do nothing
+        on conflict (platform, platform_id) do nothing
       `;
     },
-    async getFollowers(id) {
+    async getFollowers(userId, platform) {
       const rows = await sql<Follower[]>`
           select *
           from followers
-          where github_id = ${id}
+          where user_id = ${userId}
+          and platform = ${platform}
         `;
 
       return rows;
     },
-    async getGhosts(id) {
+    async getGhosts(userId, platform) {
       return await sql<Ghost[]>`
           select *
           from unfollowers
-          where user_id = ${id}
+          where user_id = ${userId}
+          and platform = ${platform}
         `;
     },
     async updateFollowerFollowState(args) {
       await sql`
         with latest as (
           select id from followers
-          where github_id = ${args.githubId} and username = ${args.username}
+          where user_id = ${args.userId}
+          and username = ${args.username}
+          and platform = ${args.platform}
           order by fetched_at desc
           limit 1
         )

@@ -56,9 +56,9 @@ const SUBJECTS = [
 ];
 
 export async function welcome(
-  user: Pick<User, 'createdAt' | 'githubId' | 'email' | 'name'>
+  user: Pick<User, 'createdAt' | 'platformId' | 'platform' | 'email' | 'name'>
 ) {
-  const human = await db().human(user.githubId);
+  const human = await db().human(user.platformId, user.platform);
   if (new Date(human?.createdAt as Date).getDate() !== new Date().getDate())
     return;
 
