@@ -39,13 +39,15 @@ export async function fetchGitHubFollowersForUser(
 
           return {
             username: f.login,
+            platform: 'github' as const,
             avatarUrl: f.avatar_url,
             bio: detail.data.bio ?? null,
             location: detail.data.location ?? null,
-            githubId: user.githubId,
+            userId: user.id,
             fetchedAt: new Date(),
             name: detail.data.name ?? null,
             isFollowing,
+            firstFollowedAt: new Date(),
           };
         })
       )

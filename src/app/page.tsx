@@ -22,7 +22,7 @@ export default async function Home() {
           fontSize={{ lg: '22px', md: '18px', base: '18px' }}
           mt="-1em"
           textAlign="center">
-          GitHub followers come and go &mdash; catch who left. 👻
+          Followers come and go &mdash; catch who left. 👻
         </Text>
         <Text
           color="var(--color-text-disabled)"

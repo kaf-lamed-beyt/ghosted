@@ -48,10 +48,14 @@ export async function GET(req: Request) {
     ? emails.find((e) => e.primary && e.verified)?.email
     : null;
 
-  const human = await db().human(user.data.id);
+  const platformId = String(user.data.id);
+  const platform = 'github';
+  
+  const human = await db().human(platformId, platform);
   if (!human) {
     await db().createUser({
-      githubId: user.data.id,
+      platform,
+      platformId,
       username: user.data.login,
       avatarUrl: user.data.avatar_url,
       email: primaryEmail,
@@ -65,16 +69,18 @@ export async function GET(req: Request) {
   }
 
   await welcome({
-    githubId: user.data.id,
+    platformId,
+    platform,
     email: primaryEmail,
     name: user.data.name,
-    createdAt: human?.createdAt as Date,
+    createdAt: human?.createdAt || new Date(),
   });
 
   const cookieStore = await cookies();
 
   const session = JSON.stringify({
-    id: user.data.id,
+    platformId,
+    platform,
     token: access_token,
   });
 

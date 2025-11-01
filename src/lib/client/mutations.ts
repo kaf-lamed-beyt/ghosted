@@ -1,7 +1,10 @@
+import { Platform } from '../server/db';
+
 export type FollowStateUpdateParams = {
-  githubId: number;
+  userId: number;
   username: string;
   isFollowing: boolean;
+  platform: Platform;
 };
 
 export const updateFollowState = async (params: FollowStateUpdateParams) => {
@@ -9,9 +12,10 @@ export const updateFollowState = async (params: FollowStateUpdateParams) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      githubId: params.githubId,
+      userId: params.userId,
       username: params.username,
       isFollowing: params.isFollowing,
+      platform: params.platform,
     }),
   });
 };
